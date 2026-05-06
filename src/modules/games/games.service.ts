@@ -2,26 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
-export class TournamentsService {
+export class GamesService {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  // Créer un nouveau tournoi
-  async create(tournamentData: any) {
+  // Enregistrer une nouvelle partie (terminée ou en pause)
+  async createGame(gameData: any) {
     const client = this.supabaseService.getClient();
     const { data, error } = await client
-      .from('tournaments')
-      .insert([tournamentData])
+      .from('games')
+      .insert([gameData])
       .select();
 
     if (error) throw error;
     return data;
   }
 
-  // Récupérer tous les tournois (historique)
+  // Récupérer l'historique complet des parties
   async findAll() {
     const client = this.supabaseService.getClient();
     const { data, error } = await client
-      .from('tournaments')
+      .from('games')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -29,24 +29,16 @@ export class TournamentsService {
     return data;
   }
 
-  // Mettre à jour l'état d'un tournoi (ex: après un match ou pour mettre en pause)
-  async update(id: number, updateData: any) {
+  // Mettre à jour une partie (ex: passer de "en pause" à "terminée")
+  async updateGame(id: number, updateData: any) {
     const client = this.supabaseService.getClient();
     const { data, error } = await client
-      .from('tournaments')
+      .from('games')
       .update(updateData)
       .eq('id', id)
       .select();
 
     if (error) throw error;
     return data;
-  }
-
-  // Supprimer un tournoi
-  async remove(id: number) {
-    const client = this.supabaseService.getClient();
-    const { error } = await client.from('tournaments').delete().eq('id', id);
-    if (error) throw error;
-    return { deleted: true };
   }
 }

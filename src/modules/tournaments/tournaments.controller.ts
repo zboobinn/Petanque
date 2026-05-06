@@ -1,19 +1,27 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 
-@Controller('tournaments') // Le préfixe de la route sera /tournaments
+@Controller('tournaments')
 export class TournamentsController {
   constructor(private readonly tournamentsService: TournamentsService) {}
 
-  // Route pour générer un nouveau tournoi (POST /tournaments/generate)
-  @Post('generate')
-  async generateTournament(@Body() playersData: { players: string[] }) {
-    return this.tournamentsService.createBrackets(playersData.players);
+  @Post()
+  create(@Body() tournamentData: any) {
+    return this.tournamentsService.create(tournamentData);
   }
 
-  // Route pour récupérer l'historique des tournois (GET /tournaments)
   @Get()
-  async getAllTournaments() {
-    return { message: 'Ici, nous récupérerons la liste des tournois depuis Supabase' };
+  findAll() {
+    return this.tournamentsService.findAll();
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateData: any) {
+    return this.tournamentsService.update(+id, updateData);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.tournamentsService.remove(+id);
   }
 }
