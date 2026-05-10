@@ -24,4 +24,21 @@ export class TournamentsController {
   remove(@Param('id') id: string) {
     return this.tournamentsService.remove(+id);
   }
+
+  // --- NOUVELLES ROUTES POUR LE SYSTEME DE QR CODE ---
+
+  // Route publique pour la page web
+  @Post('public/score')
+  submitPublicScore(@Body() body: { tournamentId: number, matchId: string, token: string, team1Score: number, team2Score: number }) {
+    return this.tournamentsService.submitPublicScore(body);
+  }
+
+  // Route privée pour ton application mobile
+  @Post(':id/resolve-score')
+  resolveScore(
+    @Param('id') id: string, 
+    @Body() body: { pendingScoreId: string, action: 'approve' | 'reject' }
+  ) {
+    return this.tournamentsService.resolvePendingScore(+id, body.pendingScoreId, body.action);
+  }
 }
